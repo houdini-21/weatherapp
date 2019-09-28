@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import Header from './componentes/Header'
 import Formulario from './componentes/Formulario';
 import Error from './componentes/Error';
+import Clima from './componentes/Clima'
 
 class App extends Component {
 
   state = {
     error: '',
-    consulta: false
+    consulta: {},
+    resultado: {}
   }
 
     componentDidUpdate(){
@@ -25,8 +27,20 @@ class App extends Component {
     
     const appId = 'fd24a70945ff5287c17a6736ac5d1d77';
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${appId}`
-    console.log(url);
 
+    fetch(url)
+      .then(respuesta =>{
+        return respuesta.json();
+
+      })
+        .then(datos =>  {
+            this.setState({
+              resultado: datos
+            })
+        })
+        .catch(error => {
+          console.log(error)
+        })
   }
 
   datosConsulta = respuesta => {
@@ -36,7 +50,8 @@ class App extends Component {
       })
     } else {
       this.setState({
-        consulta: respuesta
+        consulta: respuesta,
+        error : false
       })
       }
     }
@@ -47,8 +62,9 @@ class App extends Component {
     let resultado;
     if(error) {
       resultado = <Error mensaje='Ambos campos son obligatorios' />
-    } else {
-
+    } 
+    else {
+      resultado = <Clima resultado= {this.state.resultado}/>
     }
     return (
       <div className='App'>
